@@ -20,6 +20,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.Base64DecodingException;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.security.Key;
@@ -55,9 +56,9 @@ public class EncryptedServletRequest extends HttpServletRequestWrapper {
 					try {
 						values[i] = Encryptor.decrypt(_key, values[i]);
 					}
-					catch (EncryptorException encryptorException) {
+					catch (EncryptorException | Base64DecodingException exception) {
 						if (_log.isDebugEnabled()) {
-							_log.debug(encryptorException, encryptorException);
+							_log.debug(exception, exception);
 						}
 
 						values[i] = StringPool.BLANK;

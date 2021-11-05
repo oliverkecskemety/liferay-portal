@@ -330,11 +330,11 @@ public class PortletPreferencesFactoryImpl
 				userId = GetterUtil.getLong(
 					Encryptor.decrypt(company.getKeyObj(), doAsUserId), userId);
 			}
-			catch (EncryptorException encryptorException) {
+			catch (EncryptorException | PortalException exception) {
 				if (_log.isDebugEnabled()) {
 					_log.debug(
 						"Unable to decrypt user ID from " + doAsUserId,
-						encryptorException);
+						exception);
 				}
 				else if (_log.isWarnEnabled()) {
 					_log.warn("Unable to decrypt user ID from " + doAsUserId);

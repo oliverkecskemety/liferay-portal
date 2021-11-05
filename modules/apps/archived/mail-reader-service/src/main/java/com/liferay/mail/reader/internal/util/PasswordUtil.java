@@ -18,6 +18,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Base64;
+import com.liferay.portal.kernel.util.Base64DecodingException;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.io.UnsupportedEncodingException;
@@ -39,9 +40,9 @@ public class PasswordUtil {
 
 			unencryptedPassword = new String(bytes, StringPool.UTF8);
 		}
-		catch (UnsupportedEncodingException unsupportedEncodingException) {
+		catch (UnsupportedEncodingException | Base64DecodingException exception) {
 			_log.error(
-				"Unable to decrypt the password", unsupportedEncodingException);
+				"Unable to decrypt the password", exception);
 		}
 
 		return unencryptedPassword;

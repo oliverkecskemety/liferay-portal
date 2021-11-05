@@ -24,17 +24,19 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.regex.Pattern;
 
 /**
  * @author Brian Wing Shun Chan
  */
 public class Base64 {
 
-	public static byte[] decode(String base64) {
+	public static byte[] decode(String base64) throws Base64DecodingException {
 		return _decode(base64, false);
 	}
 
-	public static byte[] decodeFromURL(String base64) {
+	public static byte[] decodeFromURL(String base64)
+		throws Base64DecodingException {
 		return _decode(base64, true);
 	}
 
@@ -68,22 +70,31 @@ public class Base64 {
 			unsyncByteArrayOutputStream.size(), false);
 	}
 
-	public static Object stringToObject(String s) {
+	public static Object stringToObject(String s) throws
+		Base64DecodingException {
 		return _stringToObject(s, null, false);
 	}
 
-	public static Object stringToObject(String s, ClassLoader classLoader) {
+	public static Object stringToObject(String s, ClassLoader classLoader)
+		throws Base64DecodingException {
 		return _stringToObject(s, classLoader, false);
 	}
 
-	public static Object stringToObjectSilent(String s) {
+	public static Object stringToObjectSilent(String s)
+		throws Base64DecodingException {
 		return _stringToObject(s, null, true);
 	}
 
-	private static byte[] _decode(String base64, boolean url) {
+	private static byte[] _decode(String base64, boolean url)
+		throws Base64DecodingException {
 		if (Validator.isNull(base64)) {
 			return new byte[0];
 		}
+
+		Pattern base64Regex = Pattern.compile("^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$");
+
+		if (base64.length() % 4 != 0 || !base64Regex.matcher(base64).matches())
+			throw new Base64DecodingException("Input is not a valid Base64 string.");
 
 		int pad = 0;
 
@@ -254,7 +265,8 @@ public class Base64 {
 	}
 
 	private static Object _stringToObject(
-		String s, ClassLoader classLoader, boolean silent) {
+		String s, ClassLoader classLoader, boolean silent)
+		throws Base64DecodingException {
 
 		if (s == null) {
 			return null;
