@@ -16,9 +16,6 @@ package com.liferay.portal.kernel.util;
 
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
-
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,45 +25,46 @@ import org.junit.Test;
 public class Base64Test {
 
 	@Test
-	public void testBase64Consistency() {
+	public void testBase64Consistency() throws Base64DecodingException {
 		byte[] decoded = Base64.decode(Base64.encode(_BYTES));
 
-		Assert.assertTrue(Arrays.equals(_BYTES, decoded));
+		Assert.assertArrayEquals(_BYTES, decoded);
 	}
 
 	@Test
-	public void testBase64URLConsistency() {
+	public void testBase64URLConsistency() throws Base64DecodingException {
 		byte[] decoded = Base64.decodeFromURL(Base64.encodeToURL(_BYTES));
 
-		Assert.assertTrue(Arrays.equals(_BYTES, decoded));
+		Assert.assertArrayEquals(_BYTES, decoded);
 	}
 
 	@Test
-	public void testDecode() {
+	public void testDecode() throws Base64DecodingException {
 		byte[] decoded = Base64.decode(_BYTES_BASE64);
 
-		Assert.assertTrue(Arrays.equals(_BYTES, decoded));
+		Assert.assertArrayEquals(_BYTES, decoded);
 
 		decoded = Base64.decode(
 			CharPool.SPACE + _BYTES_BASE64 + CharPool.SPACE);
 
-		Assert.assertTrue(Arrays.equals(_BYTES, decoded));
+		Assert.assertArrayEquals(_BYTES, decoded);
 	}
 
 	@Test
-	public void testDecodeFromURL() {
+	public void testDecodeFromURL() throws Base64DecodingException {
 		byte[] decoded = Base64.decodeFromURL(_BYTES_BASE64URL);
 
-		Assert.assertTrue(Arrays.equals(_BYTES, decoded));
+		Assert.assertArrayEquals(_BYTES, decoded);
 
 		decoded = Base64.decodeFromURL(
 			CharPool.SPACE + _BYTES_BASE64URL + CharPool.SPACE);
 
-		Assert.assertTrue(Arrays.equals(_BYTES, decoded));
+		Assert.assertArrayEquals(_BYTES, decoded);
 	}
 
 	@Test
-	public void testDecodeFromURLBackwardsCompatible() {
+	public void testDecodeFromURLBackwardsCompatible()
+		throws Base64DecodingException {
 		Assert.assertTrue(
 			StringUtil.contains(_BYTES_BASE64URL, StringPool.EQUAL));
 
@@ -75,71 +73,54 @@ public class Base64Test {
 
 		byte[] decoded = Base64.decodeFromURL(liferayCustomBase64URL);
 
-		Assert.assertTrue(Arrays.equals(_BYTES, decoded));
+		Assert.assertArrayEquals(_BYTES, decoded);
 	}
 
 	@Test
-	public void testDecodeFromURLInvalidInput() {
+	public void testDecodeFromURLInvalidInput() throws Base64DecodingException {
 		byte[] decoded = Base64.decodeFromURL(null);
+		Assert.assertEquals(0, decoded.length);
 
-		Assert.assertTrue((decoded != null) && (decoded.length == 0));
+		Assert.assertThrows(Base64DecodingException.class, () -> Base64.decodeFromURL("   "));
 
-		decoded = Base64.decodeFromURL("   ");
+		Assert.assertThrows(Base64DecodingException.class, () -> Base64.decodeFromURL("!@#$%^&*()<>"));
 
-		Assert.assertTrue((decoded != null) && (decoded.length == 0));
+		Assert.assertThrows(Base64DecodingException.class, () -> Base64.decodeFromURL("A"));
 
-		decoded = Base64.decodeFromURL("!@#$%^&*()<>");
-
-		Assert.assertTrue((decoded != null) && (decoded.length == 0));
-
-		decoded = Base64.decodeFromURL("A");
-
-		Assert.assertTrue((decoded != null) && (decoded.length == 0));
-
-		decoded = Base64.decodeFromURL("A===");
-
-		Assert.assertTrue((decoded != null) && (decoded.length == 0));
+		Assert.assertThrows(Base64DecodingException.class, () -> Base64.decodeFromURL("A==="));
 	}
 
 	@Test
-	public void testDecodeFromURLWithNoPadding() {
+	public void testDecodeFromURLWithNoPadding()
+		throws Base64DecodingException {
 		Assert.assertTrue(
 			StringUtil.contains(_BYTES_BASE64URL, StringPool.EQUAL));
 
 		byte[] decoded = Base64.decodeFromURL(
 			StringUtil.removeChar(_BYTES_BASE64URL, CharPool.EQUAL));
 
-		Assert.assertTrue(Arrays.equals(_BYTES, decoded));
+		Assert.assertArrayEquals(_BYTES, decoded);
 	}
 
 	@Test
-	public void testDecodeInvalidInputs() {
+	public void testDecodeInvalidInputs() throws Base64DecodingException {
 		byte[] decoded = Base64.decode(null);
+		Assert.assertEquals(0, decoded.length);
 
-		Assert.assertTrue((decoded != null) && (decoded.length == 0));
+		Assert.assertThrows(Base64DecodingException.class, () -> Base64.decode("   "));
 
-		decoded = Base64.decode("   ");
+		Assert.assertThrows(Base64DecodingException.class, () -> Base64.decode("!@#$%^&*()<>"));
 
-		Assert.assertTrue((decoded != null) && (decoded.length == 0));
+		Assert.assertThrows(Base64DecodingException.class, () -> Base64.decode("A"));
 
-		decoded = Base64.decode("!@#$%^&*()<>");
-
-		Assert.assertTrue((decoded != null) && (decoded.length == 0));
-
-		decoded = Base64.decode("A");
-
-		Assert.assertTrue((decoded != null) && (decoded.length == 0));
-
-		decoded = Base64.decode("A===");
-
-		Assert.assertTrue((decoded != null) && (decoded.length == 0));
+		Assert.assertThrows(Base64DecodingException.class, () -> Base64.decode("A==="));
 	}
 
 	@Test
-	public void testDecodeMime() {
+	public void testDecodeMime() throws Base64DecodingException {
 		byte[] decoded = Base64.decode(_BYTES_BASE64MIME);
 
-		Assert.assertTrue(Arrays.equals(_BYTES, decoded));
+		Assert.assertArrayEquals(_BYTES, decoded);
 	}
 
 	@Test
