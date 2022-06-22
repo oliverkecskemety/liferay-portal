@@ -51,6 +51,10 @@ public class CookiesConfigurationVisibilityController
 	public boolean isVisible(
 		ExtendedObjectClassDefinition.Scope scope, Serializable scopePK) {
 
+		if (!GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-142518"))) {
+			return false;
+		}
+
 		try {
 			CookiesPreferenceHandlingConfiguration
 				cookiesPreferenceHandlingConfiguration = null;
@@ -86,11 +90,10 @@ public class CookiesConfigurationVisibilityController
 
 	@Activate
 	protected void activate(BundleContext bundleContext) {
-		if (GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-142518"))) {
+		if (!GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-142518"))) {
 			_serviceRegistration = bundleContext.registerService(
 				ConfigurationVisibilityController.class,
-				(scope, scopePK) -> GetterUtil.getBoolean(
-					PropsUtil.get("feature.flag.LPS-142518")),
+				(scope, scopePK) -> false,
 				HashMapDictionaryBuilder.put(
 					"configuration.pid",
 					"com.liferay.cookies.configuration." +
